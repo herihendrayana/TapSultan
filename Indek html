@@ -1,0 +1,18 @@
+<!DOCTYPE html><html lang="id"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>LINK.TAPSULTAN</title><script src="https://cdn.jsdelivr.net/npm/ethers@5.7.2/dist/ethers.umd.min.js"></script>
+<style>body{background:#000;color:#fff;text-align:center;font-family:Arial;padding:10px}
+.logo{font-size:70px;animation:glow 2s infinite alternate}@keyframes glow{from{text-shadow:0 0 10px gold}to{text-shadow:0 0 30px gold}}
+h1{color:gold}.box{background:#111;border:2px solid gold;border-radius:15px;padding:15px;margin:15px auto;max-width:420px}
+.btn{background:gold;color:#000;border:0;padding:18px;font-size:18px;border-radius:10px;width:100%;margin:8px 0;font-weight:bold}
+#uang{font-size:35px;color:gold}#token{font-size:25px;color:#0f0}#wallet{color:#0f0;font-size:12px;word-break:break-all}</style></head><body>
+<div class="logo">👑</div><h1>LINK.TAPSULTAN</h1><p style="color:#ffaa00">BY HERIHENDRAYANA</p>
+<button class="btn" id="btnConnect" onclick="connectWallet()">🔗 KONEKSIKAN WALLET</button><p id="wallet">Belum konek</p>
+<div class="box"><h3>💰 POIN GAME</h3><div id="uang">0</div><h3>🪙 $SULTAN EARNED</h3><div id="token">0.000</div>
+<p>1 Tap = 1 Poin | 1000 Poin = 1 $SULTAN</p><button class="btn" onclick="tap()">🔥 TAP UNTUK POIN 🔥</button></div>
+<script>let poin=parseInt(localStorage.getItem("tapSultanPoin"))||0;
+function update(){document.getElementById("uang").innerText=poin.toLocaleString('id-ID');document.getElementById("token").innerText=(poin/1000).toFixed(3)}
+function tap(){poin+=1;update();localStorage.setItem("tapSultanPoin",poin)}
+async function connectWallet(){if(typeof window.ethereum!=='undefined'){provider=new ethers.providers.Web3Provider(window.ethereum);
+await provider.send("eth_requestAccounts",[]);signer=provider.getSigner();userAddress=await signer.getAddress();
+document.getElementById("wallet").innerText="Wallet: "+userAddress;document.getElementById("btnConnect").innerText="✅ TERHUBUNG";
+alert("Berhasil Konek Bang!")}else{alert("Buka di Browser Metamask")}}update();</script></body></html>
