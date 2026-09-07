@@ -2,184 +2,107 @@
 <html lang="id">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-<title>GARUDA MINING INCHAIN v2.3</title>
-<script src="https://cdn.jsdelivr.net/npm/web3@1.10.0/dist/web3.min.js"></script>
+<title>SULTAN TAP v7 - BANK SULTAN</title>
+<script src="https://cdn.jsdelivr.net/npm/ethers@5.7.2/dist/ethers.umd.min.js"></script>
 <style>
-*{box-sizing:border-box;margin:0;padding:0;font-family:'Arial',sans-serif}
-body{background:linear-gradient(180deg, #000, #001a00);color:#00FF88;text-align:center;padding:10px;min-height:100vh}
-h1{font-size:22px;margin:10px 0;text-shadow:0 0 15px #00FF88}
-.card{background:#0a0a0a;border:2px solid #00FF88;border-radius:20px;padding:20px;margin:15px 0;box-shadow:0 0 20px rgba(0,255,136,0.3)}
-#tapBtn{width:200px;height:200px;border-radius:50%;background:radial-gradient(circle, #00FF88, #00AA55);color:#000;font-size:26px;font-weight:bold;border:4px solid #fff;box-shadow:0 0 40px #00FF88;margin:15px auto;display:block;transition:0.1s;cursor:pointer}
-#tapBtn:active{transform:scale(0.9)}
-.btn{background:#00FF88;color:#000;border:none;padding:14px;font-size:14px;font-weight:bold;border-radius:12px;margin:6px;width:48%;cursor:pointer;transition:0.2s}
-.btn:active{transform:scale(0.95)}
-.btn:disabled{opacity:0.5;cursor:not-allowed}
-.btn-full{width:100%}.btn-kirim{background:#00FF00}.btn-auto{background:#FF8800;color:#fff}.btn-connect{background:#00AAFF;color:#fff}.btn-claim{background:#FFD700;color:#000}
-input{width:100%;padding:14px;border-radius:10px;border:2px solid #00FF88;background:#111;color:#00FF88;text-align:center;font-size:15px;margin:8px 0}
-.success{color:#00FF00}.error{color:#FF4444}.warning{color:#FFAA00}.info{color:#00AAFF}
-.tx-link{color:#00FF00;text-decoration:underline;font-size:12px;word-break:break-all}
-.status-box{padding:10px;border-radius:10px;margin:10px 0;font-weight:bold}
+body{background:#000;color:#0f0;font-family:'Courier New';text-align:center;padding:10px}
+.btn{padding:10px 18px;margin:4px;border:none;border-radius:8px;font-size:14px;cursor:pointer;font-weight:bold}
+.chain-btn{background:#111;color:#0f0;border:1px solid #0f0}.chain-btn.active{background:#0f0;color:#000}
+#tapBtn{background:radial-gradient(circle,#ff0044,#000);color:#fff;font-size:22px;padding:25px 50px;border-radius:50%;border:3px solid #0f0}
+.box{background:#0a0a0a;padding:12px;margin:8px;border-radius:8px;border:1px solid #333}
+.buy{background:#00ff00;color:#000}.sell{background:#ff0044;color:#fff}
+input{background:#111;color:#0f0;border:1px solid #0f0;padding:6px;width:100px;text-align:center}
+.rate{color:#ffaa00;font-size:12px}
 </style>
 </head>
 <body>
 
-<h1>👑 GARUDA MINING INCHAIN v2.3 👑</h1>
-<button class="btn btn-connect btn-full" id="connectBtn">🔗 HUBUNGKAN WALLET</button>
-<div id="status" class="status-box warning">Status: Mode Offline. Tap dulu, Claim butuh wallet</div>
-<p>Wallet: <span id="walletAddress">-</span></p>
+<h1>🏦 BANK SULTAN v7 🏦</h1>
 
-<div class="card">
-<h2>BALANCE BLOCKCHAIN: <span id="balance">0.00</span> GRD</h2>
-<h2>HASIL TAP: <span id="pendingTap">0.00</span> GRD</h2>
-<h3>Per Tap: <span id="perTap">5</span></h3>
-<button id="tapBtn">TAP<br><span id="tapDisplay">+5</span></button>
-<p>TOTAL TAP: <span id="tapCount">0</span></p>
-<button class="btn btn-auto" id="autoBtn">🤖 AUTO TAP</button>
-<button class="btn" id="buyAuto">⚡ BELI AUTO 800</button>
-<button class="btn btn-claim btn-full" id="claimBtn" disabled>📥 CLAIM KE BLOCKCHAIN</button>
+<div>
+  <button class="btn chain-btn active" onclick="switchChain('bsc')">BSC</button>
+  <button class="btn chain-btn" onclick="switchChain('polygon')">POLY</button>
+  <button class="btn chain-btn" onclick="switchChain('xlm')">XLM</button>
 </div>
 
-<div class="card">
-<h3>📦 KIRIM TOKEN BENERAN</h3>
-<input type="text" id="alamatTujuan" placeholder="Alamat Tujuan 0x...">
-<input type="number" id="jumlahKirim" placeholder="Kosongkan = Kirim Semua">
-<button class="btn btn-kirim btn-full" id="kirimBtn">KIRIM TOKEN</button>
-<div id="kirimStatus"></div>
+<button class="btn" id="connectBtn" onclick="connectWallet()">Connect Wallet</button>
+
+<div class="box">
+  <h3>SALDO GAME: <span id="gameSaldo">0</span> GRD</h3>
+  <p>Per Tap: <span id="perTap">1</span> GRD | Gas: <span id="gasInfo">~Rp 1200</span></p>
 </div>
+
+<button class="btn" id="tapBtn" onclick="manualTap()">TAP</button>
+<button class="btn" id="autoTap" onclick="toggleAuto()">AUTO TAP: OFF</button>
+
+<div class="box">
+  <h4>BOOST</h4>
+  <button class="btn" onclick="buyBoost(2)">x2 - 1000</button>
+  <button class="btn" onclick="buyBoost(5)">x5 - 5000</button>
+  <button class="btn" onclick="buyBoost(10)">x10 - 20000</button>
+</div>
+
+<div class="box">
+  <h4>💱 EXCHANGER P2P 💱</h4>
+  <p class="rate">RATE: BELI 1 BNB = 1.000.000 GRD | JUAL 1jt GRD = 0.95 BNB</p>
+  <p>SELISIH 5% MASUK KE KAMU BOS</p>
+  <input type="number" id="jumlahGRD" placeholder="Jumlah GRD" value="1000000">
+  <br>
+  <button class="btn buy" onclick="beliGRD()">BELI GRD PAKE BNB</button>
+  <button class="btn sell" onclick="jualGRD()">JUAL GRD KE BNB</button>
+</div>
+
+<div class="box">
+  <h4>AUTO CLAIM</h4>
+  <p>Claim otomatis jika >= <input type="number" id="targetClaim" value="1000000"> GRD</p>
+  <button class="btn" id="autoClaim" onclick="toggleAutoClaim()">AUTO CLAIM: OFF</button>
+</div>
+
+<p id="status">Siap Gas Bos</p>
 
 <script>
-const CONTRACT="0x4847F2E8dD63ba03b9C4f935BdEd95bEc1bcaCb4";
-const ABI=[{"inputs":[{"name":"to","type":"address"},{"name":"amount","type":"uint256"}],"name":"transfer","outputs":[{"name":"","type":"bool"}],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"name":"owner","type":"address"}],"name":"balanceOf","outputs":[{"name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"decimals","outputs":[{"name":"","type":"uint8"}],"stateMutability":"view","type":"function"}];
-const INCHAIN = {chainId:'0x1F4', chainName:'InchAIn Mainnet', rpcUrls:['https://mainnet.inchain.ai/'], nativeCurrency:{name:'IN',symbol:'IN',decimals:18}};
+let provider, signer, account, gameBalance = 0, multiplier = 1, autoTapInterval;
+let currentChain = 'bsc', autoClaimOn = false;
 
-let web3,contract,myAddress,balance=0,pendingBalance=0,tapCount=0,speed=5,auto=false,autoInterval=null,decimals=18,walletConnected=false,lastTapTime=0;
-const TAP_COOLDOWN=100; const UPGRADE_COST=800; // Harga upgrade
+const RATE_BELI = 1000000; // 1 BNB = 1jt GRD
+const RATE_JUAL = 950000; // 0.95 BNB = 1jt GRD. Selisih 5%
 
-window.onload=()=>{loadLocalData();updateUI();}
-
-document.getElementById('connectBtn').onclick=connectWallet;
-async function connectWallet(){
-    if(typeof window.ethereum==='undefined'){setStatus('❌ Install Metamask dulu','error');return}
-    web3=new Web3(window.ethereum);
-    try{
-        await window.ethereum.request({method:'wallet_switchEthereumChain',params:[{chainId:INCHAIN.chainId}]}).catch(async()=>{await window.ethereum.request({method:'wallet_addEthereumChain',params:[INCHAIN]})});
-        const accounts=await web3.eth.requestAccounts();
-        myAddress=accounts[0];contract=new web3.eth.Contract(ABI,CONTRACT);walletConnected=true;decimals=await contract.methods.decimals().call();
-        document.getElementById("walletAddress").innerText=myAddress.substring(0,6)+"..."+myAddress.slice(-4);
-        document.getElementById('connectBtn').innerText='✅ TERHUBUNG';document.getElementById('connectBtn').style.background='#00FF00';
-        setStatus('✅ Wallet terhubung. Bisa CLAIM & KIRIM','success');loadBlockchainBalance();
-    }catch(err){setStatus("❌ Gagal: "+err.message,"error")}
+const chains = {
+  bsc: {name:"BSC", chainId:"0x38", gas:"~Rp 1200"},
+  polygon: {name:"POLYGON", chainId:"0x89", gas:"~Rp 200"},
+  xlm: {name:"XLM", chainId:"xlm", gas:"~Rp 0.2"}
 }
 
-async function loadBlockchainBalance(){
-    if(!walletConnected)return;
-    try{const bal=await contract.methods.balanceOf(myAddress).call();balance=parseFloat(bal/(10**decimals));updateUI()}catch(err){setStatus("⚠️ Gagal memuat balance","warning")}
+function switchChain(chain){ currentChain = chain; document.querySelectorAll('.chain-btn').forEach(b=>b.classList.remove('active')); event.target.classList.add('active'); document.getElementById('gasInfo').innerText = chains[chain].gas; }
+
+async function connectWallet(){ if(currentChain==='xlm'){alert("XLM Input Alamat Manual");return;} provider=new ethers.providers.Web3Provider(window.ethereum); await provider.send("eth_requestAccounts",[]); await provider.send("wallet_switchEthereumChain",[{chainId:chains[currentChain].chainId}]); signer=provider.getSigner(); account=await signer.getAddress(); document.getElementById('connectBtn').innerText="✅ Terhubung"; }
+
+function manualTap(){ gameBalance += multiplier; document.getElementById('gameSaldo').innerText = gameBalance.toLocaleString(); checkAutoClaim(); }
+
+function toggleAuto(){ let btn=document.getElementById('autoTap'); if(autoTapInterval){clearInterval(autoTapInterval);autoTapInterval=null;btn.innerText="AUTO TAP: OFF";} else{autoTapInterval=setInterval(manualTap,70);btn.innerText="AUTO TAP: ON";} }
+
+function toggleAutoClaim(){ autoClaimOn=!autoClaimOn; let btn=document.getElementById('autoClaim'); btn.innerText=autoClaimOn?"AUTO CLAIM: ON":"AUTO CLAIM: OFF"; }
+
+function checkAutoClaim(){ let target=parseInt(document.getElementById('targetClaim').value); if(autoClaimOn && gameBalance>=target){ alert("AUTO CLAIM "+gameBalance.toLocaleString()+" GRD"); gameBalance=0;document.getElementById('gameSaldo').innerText=0; } }
+
+function buyBoost(x){ let harga=x*500; if(gameBalance>=harga){gameBalance-=harga;multiplier=x;document.getElementById('perTap').innerText=x;document.getElementById('gameSaldo').innerText=gameBalance.toLocaleString();}else{alert("GRD Kurang")} }
+
+// FITUR BANK SULTAN
+function beliGRD(){
+  let bnb = parseFloat(document.getElementById('jumlahGRD').value) / RATE_BELI;
+  alert("KIRIM "+bnb+" BNB ke WALLET KAMU\nNanti dapat "+document.getElementById('jumlahGRD').value+" GRD\n\n[INI SIMULASI. NANTI HUBUNGIN KE SMART CONTRACT]");
 }
 
-function loadLocalData(){tapCount=parseInt(localStorage.getItem('g_tap'))||0;speed=parseInt(localStorage.getItem('g_speed'))||5;pendingBalance=parseFloat(localStorage.getItem('g_pending'))||0}
-function saveLocalData(){localStorage.setItem('g_tap',tapCount);localStorage.setItem('g_speed',speed);localStorage.setItem('g_pending',pendingBalance)}
-function updateUI(){
-    document.getElementById("balance").innerText=balance.toFixed(2);
-    document.getElementById("pendingTap").innerText=pendingBalance.toFixed(2);
-    document.getElementById("tapCount").innerText=tapCount;
-    document.getElementById("perTap").innerText=speed;
-    document.getElementById("tapDisplay").innerText="+"+speed;
-    document.getElementById("buyAuto").innerText=`⚡ BELI AUTO ${UPGRADE_COST}`;
-    document.getElementById("buyAuto").disabled = pendingBalance < UPGRADE_COST; // Matiin kalau koin kurang
-    saveLocalData();
-    document.getElementById("claimBtn").disabled =!walletConnected || pendingBalance <= 0;
+function jualGRD(){
+  let jml = parseFloat(document.getElementById('jumlahGRD').value);
+  if(gameBalance >= jml){
+    let bnb = jml / RATE_JUAL;
+    gameBalance -= jml;
+    document.getElementById('gameSaldo').innerText = gameBalance.toLocaleString();
+    alert("BERHASIL JUAL "+jml.toLocaleString()+" GRD\nDAPAT "+bnb+" BNB\nSELISIH 5% UNTUNG BUAT KAMU BOS 🤣");
+  }else{ alert("GRD GAME KURANG BOS"); }
 }
-
-function tap(){
-    const now=Date.now();if(now-lastTapTime<TAP_COOLDOWN)return;lastTapTime=now;
-    pendingBalance+=speed;tapCount++;updateUI();
-    const btn=document.getElementById("tapBtn");btn.style.boxShadow="0 0 60px #fff";setTimeout(()=>{btn.style.boxShadow="0 0 40px #00FF88"},100)
-}
-document.getElementById('tapBtn').onclick=tap;
-
-document.getElementById('autoBtn').onclick=()=>{auto=!auto;if(auto){autoInterval=setInterval(tap,200);document.getElementById("autoBtn").innerText="⏹️ STOP AUTO";document.getElementById("autoBtn").style.background="#FF0000";setStatus("✅ Auto Tap AKTIF","success")}else{clearInterval(autoInterval);document.getElementById("autoBtn").innerText="🤖 AUTO TAP";document.getElementById("autoBtn").style.background="#FF8800";setStatus("⏸️ Auto Tap BERHENTI","info")}}
-
-// ===== INI YANG UDAH DIFIX =====
-document.getElementById('buyAuto').onclick=()=>{
-    if(pendingBalance < UPGRADE_COST) return setStatus(`❌ Hasil Tap kurang! Butuh ${UPGRADE_COST} GRD`,"error");
-    pendingBalance -= UPGRADE_COST; // Motong dari HASIL TAP
-    speed++; // Nambah speed
-    updateUI(); 
-    setStatus(`✅ UPGRADE BERHASIL! Per Tap sekarang: +${speed}`,"success")
-}
-
-document.getElementById('claimBtn').onclick=async()=>{
-    if(!walletConnected)return setStatus("❌ Hubungkan wallet dulu buat claim","error");
-    await kirimToken(myAddress, pendingBalance, true)
-}
-
-document.getElementById('kirimBtn').onclick=()=>{const alamat=document.getElementById("alamatTujuan").value.trim();let jumlah=parseFloat(document.getElementById("jumlahKirim").value)||balance;kirimToken(alamat, jumlah, false)}
-
-async function kirimToken(tujuan, jumlah, isClaim){
-    if(!walletConnected)return showKirimStatus("❌ Hubungkan wallet dulu di Metamask Browser","error");
-    if(!web3.utils.isAddress(tujuan))return showKirimStatus("❌ Alamat tidak valid","error");
-    if(jumlah<=0)return showKirimStatus("❌ Jumlah harus > 0","error");
-    if(jumlah>balance &&!isClaim)return showKirimStatus("❌ Saldo blockchain tidak cukup","error");
-    if(tujuan.toLowerCase()===myAddress.toLowerCase() &&!isClaim)return showKirimStatus("❌ Tidak bisa kirim ke diri sendiri","error");
-
-    try{
-        showKirimStatus("⏳ Menunggu konfirmasi Metamask...","info");document.getElementById("kirimBtn").disabled=true;document.getElementById("claimBtn").disabled=true;
-        const amountInWei=(jumlah*(10**decimals)).toString();
-        const receipt=await contract.methods.transfer(tujuan,amountInWei).send({from:myAddress});
-
-        if(isClaim){pendingBalance=0;tapCount=0} 
-        else{balance-=jumlah}
-
-        await loadBlockchainBalance();
-        showKirimStatus(`✅ BERHASIL! ${jumlah.toFixed(2)} GRD dikirim<br>TX: <a href="https://inchain.ai/tx/${receipt.transactionHash}" class="tx-link" target="_blank">${receipt.transactionHash}</a>`,"success");
-        if(!isClaim){document.getElementById("alamatTujuan").value="";document.getElementById("jumlahKirim").value=""}
-    }catch(err){
-        let msg=err.message.includes("user rejected")?"❌ Ditolak user":err.message.includes("insufficient")?"❌ Gas IN tidak cukup":"❌ GAGAL: "+err.message;
-        showKirimStatus(msg,"error")
-    }finally{document.getElementById("kirimBtn").disabled=false;updateUI()}
-}
-
-function showKirimStatus(message,type){const el=document.getElementById("kirimStatus");el.innerHTML=message;el.className="status-box "+type}
-function setStatus(message,type){const el=document.getElementById("status");el.innerText=message;el.className="status-box "+type}
-setInterval(()=>{if(walletConnected)loadBlockchainBalance()},30000);
-<div class="card">
-  <h3>QR Code Deposit</h3>
-  <div id="qrcode"></div>
-  <p id="walletAddress" style="font-size:12px; word-break: break-all;"></p>
-  <button class="btn btn-full" onclick="copyWallet()">Copy Alamat</button>
-</div>
-
-<div class="card">
-  <h3>Scan QR</h3>
-  <div id="reader" style="width:100%; margin:auto;"></div>
-  <p>Hasil: <span id="result" style="color:#00FF00"></span></p>
-</div>
-
-<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
-<script src="https://unpkg.com/html5-qrcode@2.3.8/html5-qrcode.min.js"></script>
-<script>
-let userWallet = "";
-
-// Pas connect wallet, panggil fungsi ini
-function generateQR(address) {
-  userWallet = address;
-  document.getElementById("walletAddress").innerText = address;
-  document.getElementById("qrcode").innerHTML = "";
-  new QRCode(document.getElementById("qrcode"), { text: address, width: 200, height: 200 });
-}
-
-function copyWallet() {
-  navigator.clipboard.writeText(userWallet);
-  alert("Alamat disalin!");
-}
-
-// SCANNER
-function onScanSuccess(decodedText) {
-    document.getElementById("result").innerText = decodedText;
-}
-let html5QrcodeScanner = new Html5QrcodeScanner("reader", { fps: 10, qrbox: 250 });
-html5QrcodeScanner.render(onScanSuccess);
 </script>
+
 </body>
 </html>
