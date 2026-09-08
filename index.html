@@ -1,185 +1,213 @@
 <!DOCTYPE html>
 <html lang="id">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>GRD Mining v63.15</title>
-<script src="https://cdn.jsdelivr.net/npm/web3@1.10.0/dist/web3.min.js"></script>
-<style>
-*{box-sizing:border-box;margin:0;padding:0}
-body{background:#0f0f0f;color:#fff;font-family:'Segoe UI',sans-serif;text-align:center}
-.header{padding:12px;background:#000;display:flex;justify-content:space-between;font-size:14px;font-weight:bold}
-.saldo{padding:20px 15px;font-size:18px;background:#1a1a1a;margin-bottom:10px}
-.saldo span{color:#00ff88;font-weight:bold}
-.btn{padding:12px 20px;border:none;border-radius:12px;font-size:16px;margin:8px;cursor:pointer;font-weight:bold;transition:0.2s}
-.btn:active{transform:scale(0.95)}
-.btn-tap{width:160px;height:160px;border-radius:50%;background:linear-gradient(145deg,#ff9500,#ff5500);color:#000;font-size:30px;border:5px solid #fff;display:flex;align-items:center;justify-content:center;margin:25px auto;box-shadow:0 0 25px rgba(255,149,0,0.6);user-select:none}
-.btn-biru{background:#2196f3;color:#fff}
-.btn-klaim{background:#00c853;color:#fff}
-.btn-hijau{background:#ff9800;color:#000}
-.btn:disabled{background:#444;opacity:0.5;cursor:not-allowed}
-.btn-disconnect{background:#f44336;color:#fff}
-.nav{position:fixed;bottom:0;width:100%;display:flex;background:#000;border-top:1px solid #333}
-.nav-item{flex:1;padding:12px 5px;cursor:pointer;font-size:11px;color:#aaa}
-.nav-item.active{background:#1a1a1a;color:#00ff88}
-.page{display:none;padding:20px;padding-bottom:90px}
-.page.active{display:block}
-input{padding:12px;width:90%;border-radius:10px;border:1px solid #333;margin:8px;background:#1a1a1a;color:#fff}
-.card{background:#1a1a1a;padding:15px;border-radius:15px;margin:10px 0;text-align:left}
-.hasil{margin-top:15px;padding:15px;background:#0f0f0f;border-radius:10px;border-left:4px solid #00ff88}
-.box-wallet-beranda{background:#1a1a1a;padding:15px;border-radius:15px;margin:15px 10px}
-.note{color:#00ff88;font-size:12px;margin:5px 0}
-</style>
+  <meta charset="UTF-8" />
+  <title>BANK SULTAN v62.12</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <script src="https://unpkg.com/web3@1.10.0/dist/web3.min.js"></script>
+  <style>
+    *{margin:0;padding:0;box-sizing:border-box;font-family:'Arial', sans-serif}
+    body{background:#000;color:#fff;padding-bottom:100px;min-height:100vh}
+.header{text-align:center;padding:15px}
+.header h1{color:gold;text-shadow:0 0 15px gold;font-size:26px;font-weight:bold}
+.header.sub{color:#ccc;font-size:12px;font-weight:bold}
+.saldo-box{text-align:center;padding:15px}
+.saldo{font-size:36px;font-weight:bold;color:#fff}
+.saldo-kecil{font-size:14px;color:#aaa}
+.btn{border:none;border-radius:15px;padding:16px;width:90%;font-size:16px;font-weight:bold;margin:8px auto;display:block;cursor:pointer}
+.btn:active{transform:scale(0.97)}
+.btn-biru{background:#1e90ff;color:white}
+.btn-merah{background:#dc2626;color:white}
+.btn-klaim{background: linear-gradient(45deg, #FFD700, #FFA500);color: #000;border: none;cursor: pointer;font-weight: bold;transition: opacity.2s ease, transform.15s ease;}
+.btn-klaim:hover:not(:disabled){opacity:.9;transform: translateY(-1px);}
+.btn-klaim:disabled{background: #333;color: #777;cursor: not-allowed;opacity:.7;}
+.btn-hijau{background:#00c853;color:#fff;box-shadow:0 0 25px rgba(0,200,83,0.7)}
+.btn-tap{width:180px;height:180px;border-radius:50%;border:6px solid gold;box-shadow:0 0 40px rgba(255,215,0,0.8);margin:20px auto;background:radial-gradient(circle, #222 0%, #111 100%);display:flex;align-items:center;justify-content:center;color:gold;font-size:28px;font-weight:bold}
+.btn-tap:active{transform:scale(0.92)}
+.btn-tap.active{box-shadow:0 0 60px rgba(0,255,255,1);border-color:cyan;color:cyan}
+.navbar{position:fixed;bottom:0;left:0;right:0;background:#111;border-top:1px solid #333;display:flex;justify-content:space-around;padding:8px 0;z-index:999}
+.nav-item{color:#777;font-size:10px;text-align:center;cursor:pointer;flex:1;padding:4px}
+.nav-item.active{color:gold}
+.nav-icon{font-size:20px;display:block;margin-bottom:2px}
+.nav-plus{background:#2563eb;border-radius:50%;width:55px;height:55px;display:flex;align-items:center;justify-content:center;color:#fff;font-size:30px;margin:0 auto;border:4px solid #000}
+.halaman{display:none;padding-bottom:60px}
+.halaman.active{display:block}
+.box{background:#1a1a1a;margin:15px;padding:18px;border-radius:15px;text-align:left}
+.input{width:100%;padding:12px;background:#222;border:1px solid #444;border-radius:10px;color:#fff;margin-top:8px;font-size:14px}
+.loading{color:orange;font-size:12px;text-align:center;margin-top:10px}
+.label{color:#aaa;font-size:12px;margin-top:10px}
+.btn-kecil{padding:10px;font-size:13px;width:100%;margin-top:5px}
+.judul-dana{color:gold;font-size:22px;font-weight:bold;text-align:center;margin:10px 0;text-shadow:0 0 10px gold}
+.menu-list{background:#1a1a1a;margin:15px;padding:15px;border-radius:15px}
+.menu-item{padding:15px;border-bottom:1px solid #333;display:flex;align-items:center;gap:10px;cursor:pointer}
+.menu-item:last-child{border:none}
+.menu-item:active{background:#222}
+.note{color:#00ff88;font-size:12px;text-align:center;margin:5px 0}
+  </style>
 </head>
 <body>
+  <div id="beranda" class="halaman active">
+    <div class="header"><h1>💰 BANK SULTAN</h1><div class="sub">BHINNEKA TUNGGAL IKA</div><div id="jam" style="color:#aaa;font-size:12px;margin-top:5px"></div></div>
+    <div class="saldo-box"><div class="saldo"><span id="saldoGame">0</span> GRD</div><div class="saldo-kecil">Saldo Game</div></div>
 
-<div class="header"><div>GRD MINING</div><div id="jam">00:00:00</div></div>
-<div class="saldo"><div>SALDO GAME: <span id="saldoGame">0</span> GRD</div><div>SALDO DANA: <span id="saldoDana">11,200</span> GRD</div></div>
-
-<div class="page active" id="page-beranda">
-  <!-- WALLET DI BERANDA -->
-  <div class="box-wallet-beranda">
-    <h3>👛 WALLET</h3>
-    <div id="boxConnectBeranda">
-      <button id="btnConnectBeranda" class="btn btn-biru">CONNECT WALLET</button>
+    <div id="boxConnect"><button class="btn btn-biru" id="btnConnect">🔗 CONNECT WALLET</button></div>
+    <div id="boxConnected" style="display:none">
+        <div id="wallet" style="color:yellow;font-size:12px;text-align:center"></div>
+        <button class="btn btn-kecil" id="btnCopy">📋 COPY ALAMAT</button>
+        <button class="btn btn-merah btn-kecil" id="btnDisconnect">❌ PUTUS</button>
     </div>
-    <div id="boxConnectedBeranda" style="display:none">
-      <div id="alamatWalletBeranda" class="card" style="font-size:12px;word-break:break-all">Belum Connect</div>
-      <button id="btnCopyAlamatBeranda" class="btn">COPY ALAMAT</button>
-      <button id="btnDisconnectBeranda" class="btn btn-disconnect">PUTUS</button>
+
+    <div class="btn-tap" id="tapButton">TAP</div>
+    <div style="text-align:center;margin-top:8px">
+        <button id="btnKlaim" class="btn btn-klaim" type="button" onclick="klaimKeDana()" disabled>💰 CLAIM KE WALLET</button>
     </div>
   </div>
 
-  <div class="btn-tap" id="tapButton">TAP</div>
-  <button id="btnMiningGede" class="btn btn-biru">⚡ MINING GEDE x5</button>
-  <button id="btnAuto" class="btn" style="background:#444">🤖 AUTO MINING OFF</button>
-  <button id="btnKlaim" class="btn btn-klaim" disabled>💰 CLAIM KE WALLET</button>
-</div>
+  <div id="dana" class="halaman"><div class="header"><div class="judul-dana">💰 DANA</div></div><div class="box"><div class="label">SALDO DANA</div><div style="font-size:28px;font-weight:bold"><span id="saldoClaim">11200</span> GRD</div><div class="label">JUMLAH WITHDRAW</div><input type="number" id="inputJumlah" class="input" placeholder="Contoh: 15200"><div class="label">ALAMAT WALLET TUJUAN</div><input type="text" id="inputAlamat" class="input" placeholder="Hubungkan wallet dulu" readonly></div><button class="btn btn-hijau" id="btnWithdraw">🏦 WITHDRAW KE BLOCKCHAIN</button><div id="loading" class="loading"></div></div>
 
-<div class="page" id="page-wallet">
-  <h3>👛 WITHDRAW</h3>
-  <div class="card">
-    <div>Alamat Terhubung:</div>
-    <div id="alamatWalletPage" style="color:#00ff88;font-size:12px;word-break:break-all;margin:10px 0">Belum Connect</div>
+  <div id="liquidity" class="halaman">
+    <div class="header"><h1>💧 LIKUIDITAS</h1></div>
+    <div class="box">
+      <p><b>Kontrak GRD:</b></p>
+      <p style="font-size:11px;word-break:break-all">0x4847F2E8dD63ba03b9C4f935BdEd95bEc1bcaCb4</p>
+      <p class="note">✅ Pilih 1 DEX dibawah. Wajib Connect dulu</p>
+      <button id="btnCake" class="btn btn-biru">1. CAKEBAKER LP</button>
+      <button id="btnApe" class="btn" style="background:#f0b90b;color:#000">2. APESWAP LP</button>
+      <button id="btnBiswa" class="btn" style="background:#00c853">3. BISWAP LP</button>
+    </div>
   </div>
-  <input type="number" id="inputWithdraw" placeholder="Jumlah GRD">
-  <button id="btnWithdraw" class="btn" style="background:#00c853">WITHDRAW KE BLOCKCHAIN</button>
-</div>
 
-<div class="page" id="page-referal"><h3>👥 REFERAL</h3><div class="card"><div>Kode Referal Kamu</div><div id="kodeReferal" style="font-size:22px;color:#00ff88;margin:10px 0">GRD12345</div><button id="btnSalin" class="btn">SALIN KODE</button></div></div>
+  <div id="tambah" class="halaman"><div class="header"><h1>➕ TAMBAH</h1></div><div class="menu-list"><div class="menu-item" onclick="alert('📈 Top Up GRD segera hadir!')">📈 Top Up GRD</div></div></div>
+  <div id="reward" class="halaman"><div class="header"><h1>🎁 REWARD</h1></div><div class="box"><div class="label">LINK REFERRAL</div><input type="text" id="linkRef" class="input" readonly><button class="btn btn-klaim" id="btnSalin">📋 COPY LINK</button></div></div>
+  <div id="profil" class="halaman"><div class="header"><h1>⚙️ PROFIL</h1></div><div class="menu-list"><div class="menu-item" onclick="showAkun()">👤 Akun Saya</div><div class="menu-item" onclick="logout()">🚪 Logout</div></div></div>
 
-<div class="page" id="page-kalkulator">
-  <h3>🧮 KALKULATOR HARGA</h3>
-  <div class="card">
-    <label>GRD di Pool</label><input type="number" id="inputGRDPool" value="1000000">
-    <label>BNB di Pool</label><input type="number" id="inputBNBPool" value="0.0000754">
-    <label>Mau Beli GRD</label><input type="number" id="inputBeli" placeholder="Contoh: 10000000">
-    <button class="btn btn-hijau" onclick="hitungHarga()">HITUNG HARGA</button>
-    <div class="hasil" id="hasilHitung">Isi jumlah beli lalu klik HITUNG</div>
+  <div class="navbar">
+    <div class="nav-item active" data-page="beranda"><div class="nav-icon">🏠</div>Beranda</div>
+    <div class="nav-item" data-page="dana"><div class="nav-icon">💰</div>Dana</div>
+    <div class="nav-item" data-page="liquidity"><div class="nav-icon">💧</div>LP</div>
+    <div class="nav-item" data-page="reward"><div class="nav-icon">🎁</div>Reward</div>
+    <div class="nav-item" data-page="profil"><div class="nav-icon">⚙️</div>Profil</div>
   </div>
-</div>
-
-<div class="page" id="page-liquidity">
-  <h3>💧 LIKUIDITAS ANTI BLOKIR</h3>
-  <div class="card">
-    <p><b>Harga Awal:</b> 1 GRD = Rp 0.001</p>
-    <p><b>Kontrak:</b> 0x4847...bCaCb4</p>
-    <p class="note">✅ Buka via Binance Web3 Browser</p>
-    <a href="https://swap.cakebaker.finance/add/BNB/0x4847F2E8dD63ba03b9C4f935BdEd95bEc1bcaCb4" target="_blank">
-      <button class="btn btn-biru">1. CAKEBAKER LP</button>
-    </a>
-  </div>
-</div>
-
-<div class="nav">
-  <div class="nav-item active" data-page="beranda">BERANDA</div>
-  <div class="nav-item" data-page="wallet">WALLET</div>
-  <div class="nav-item" data-page="referal">REFERAL</div>
-  <div class="nav-item" data-page="kalkulator">KALK</div>
-  <div class="nav-item" data-page="liquidity">LP</div>
-</div>
 
 <script>
-let saldoGame = 0; let saldoClaim = 11200; let auto = false; let autoMiningInterval;
-const HARGA_BNB_IDR = 13261674;
-const KONTRAK = "0x4847F2E8dD63ba03b9C4f935BdEd95bEc1bcaCb4";
-let web3; let userAccount; let provider;
+let saldoGame = 0; let saldoClaim = 11200; let auto = false; let interval; let web3; let walletAddress = ""; let contract; let provider;
+const CA = "0x4847F2E8dD63ba03b9C4f935BdEd95bEc1bcaCb4";
+const CHAIN_ID = "0x38";
+const ABI = [{"inputs":[{"name":"to","type":"address"},{"name":"amount","type":"uint256"}],"name":"transfer","outputs":[{"name":"","type":"bool"}],"stateMutability":"nonpayable","type":"function"},{"inputs":[],"name":"decimals","outputs":[{"name":"","type":"uint8"}],"stateMutability":"view","type":"function"}];
 
-// ===== GABUNGAN POTONGAN 2: IA BINANCE + SIMPAN =====
-function simpanWallet(alamat){ localStorage.setItem('grd_wallet', alamat); }
-function ambilWallet(){ return localStorage.getItem('grd_wallet'); }
-function hapusWallet(){ localStorage.removeItem('grd_wallet'); }
+// ===== WALLET IA BINANCE =====
+function simpanWallet(alamat){ localStorage.setItem('bank_sultan_v62', alamat); }
+function ambilWallet(){ return localStorage.getItem('bank_sultan_v62'); }
+function hapusWallet(){ localStorage.removeItem('bank_sultan_v62'); }
 
-function tampilkanStatusConnect(alamat){
+function tampilkanStatus(alamat){
   if(alamat){
-    document.getElementById('boxConnectBeranda').style.display = 'none';
-    document.getElementById('boxConnectedBeranda').style.display = 'block';
-    document.getElementById('alamatWalletBeranda').innerText = alamat;
-    document.getElementById('alamatWalletPage').innerText = alamat;
+    document.getElementById('boxConnect').style.display = 'none';
+    document.getElementById('boxConnected').style.display = 'block';
+    document.getElementById('wallet').innerText = "Wallet: " + alamat.slice(0,6)+"..."+alamat.slice(-4);
+    document.getElementById('inputAlamat').value = alamat;
   } else {
-    document.getElementById('boxConnectBeranda').style.display = 'block';
-    document.getElementById('boxConnectedBeranda').style.display = 'none';
-    document.getElementById('alamatWalletPage').innerText = 'Belum Connect';
+    document.getElementById('boxConnect').style.display = 'block';
+    document.getElementById('boxConnected').style.display = 'none';
+    document.getElementById('wallet').innerText = "Belum terhubung";
+    document.getElementById('inputAlamat').value = "";
   }
 }
 
 async function connectWallet(){
-  // CODE RESMI IA BINANCE
-  if (typeof window.BinanceChain!== 'undefined') {
-    provider = window.BinanceChain;
-    await provider.request({ method: 'eth_chainId' });
-  } else if (typeof window.ethereum!== 'undefined') {
-    provider = window.ethereum;
-  } else {
-    alert("Buka di Binance Web3 Browser ya bos!");
-    return;
-  }
+  if(typeof window.BinanceChain!== 'undefined'){ provider = window.BinanceChain; }
+  else if(typeof window.ethereum!== 'undefined'){ provider = window.ethereum; }
+  else { alert("❌ WAJIB BUKA DI: Binance App > Web3 Wallet > DApp Browser"); return; }
+
   web3 = new Web3(provider);
-  try {
+  try{
     const accounts = await provider.request({ method: 'eth_requestAccounts' });
-    userAccount = accounts[0];
-    simpanWallet(userAccount);
-    tampilkanStatusConnect(userAccount);
-    alert("Wallet Terhubung: " + userAccount.substring(0,10) + "...");
-  } catch (error) {
-    alert("Gagal connect: " + error.message);
-  }
+    walletAddress = accounts[0];
+    contract = new web3.eth.Contract(ABI,CA);
+    await provider.request({ method: 'wallet_switchEthereumChain', params: [{ chainId: CHAIN_ID }] });
+    simpanWallet(walletAddress);
+    tampilkanStatus(walletAddress);
+    alert("✅ Wallet Berhasil Terhubung!");
+  }catch(e){ alert("❌ Gagal: "+e.message) }
 }
 
-function disconnectWallet(){ hapusWallet(); userAccount = null; tampilkanStatusConnect(null); }
-function copyAlamat(){if(userAccount){navigator.clipboard.writeText(userAccount);alert("Alamat dicopy!")}}
+function disconnect(){ hapusWallet(); walletAddress = ""; tampilkanStatus(null); alert("✅ Berhasil Logout") }
 
-function update(){document.getElementById('saldoGame').innerText = saldoGame.toLocaleString('id-ID');document.getElementById('saldoDana').innerText = saldoClaim.toLocaleString('id-ID');document.getElementById('btnKlaim').disabled = saldoGame < 100;}
-function updateJam(){ document.getElementById('jam').innerText = new Date().toLocaleTimeString('id-ID'); }
-function tap(){ saldoGame += 200; update(); }
-function miningGede(){ saldoGame += 1000; update(); }
-function toggleAuto(){auto =!auto; let btn = document.getElementById('btnAuto');if(auto){btn.innerText = "🤖 AUTO MINING ON"; btn.style.background = "#00c853";autoMiningInterval = setInterval(()=>{ saldoGame += 1000; update(); }, 200);setInterval(()=>{ if(saldoGame >= 100){ saldoClaim += saldoGame; saldoGame = 0; update(); } }, 3000);} else {btn.innerText = "🤖 AUTO MINING OFF"; btn.style.background = "#444"; clearInterval(autoMiningInterval);}}
-function klaimKeDana(){ saldoClaim += saldoGame; saldoGame = 0; update(); }
-function hitungHarga(){let grdPool = parseFloat(document.getElementById('inputGRDPool').value);let bnbPool = parseFloat(document.getElementById('inputBNBPool').value);let beliGRD = parseFloat(document.getElementById('inputBeli').value);if(!beliGRD) return;let K = grdPool * bnbPool;let grdBaru = grdPool - beliGRD;let bnbBaru = K / grdBaru;let bnbBayar = bnbBaru - bnbPool;let hargaBaruIDR = (bnbBaru / grdBaru) * HARGA_BNB_IDR;document.getElementById('hasilHitung').innerHTML = `<b>Bayar:</b> ${bnbBayar.toFixed(8)} BNB = Rp ${(bnbBayar*HARGA_BNB_IDR).toLocaleString('id-ID')}<br><b>Dapat:</b> ${beliGRD.toLocaleString('id-ID')} GRD<br><b>Harga Baru:</b> Rp ${hargaBaruIDR.toFixed(6)}/GRD<br><b>Naik:</b> ${((hargaBaruIDR/0.001-1)*100).toFixed(2)}%`;}
-function gantiHalaman(page, el){document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));document.querySelectorAll('.nav-item').forEach(p=>p.classList.remove('active'));document.getElementById('page-'+page).classList.add('active');el.classList.add('active');}
-function withdraw(){ if(!userAccount){alert("Connect wallet dulu di BERANDA!"); return;} let jumlah = document.getElementById('inputWithdraw').value; if(!jumlah) return alert("Isi jumlah GRD"); alert("Fitur withdraw blockchain menyusul. Alamat: "+userAccount.substring(0,10)+"..."); }
+// ===== LP 3 DEX =====
+function bukaLP(url){
+  if(!walletAddress) return alert("Connect wallet dulu di BERANDA!");
+  window.location.href = url;
+}
 
-// AUTO LOAD PAS BUKA
-window.addEventListener('load', function() {
-  let walletTersimpan = ambilWallet();
-  if(walletTersimpan){
-    userAccount = walletTersimpan;
-    tampilkanStatusConnect(userAccount);
-    if(window.BinanceChain) provider = window.BinanceChain;
-    else if(window.ethereum) provider = window.ethereum;
-    if(provider) web3 = new Web3(provider);
-  }
-  update(); updateJam(); setInterval(updateJam,1000);
-  document.getElementById('tapButton').onclick = tap;
-  document.getElementById('btnMiningGede').onclick = miningGede;
-  document.getElementById('btnAuto').onclick = toggleAuto;
-  document.getElementById('btnKlaim').onclick = klaimKeDana;
-  document.getElementById('btnConnectBeranda').onclick = connectWallet;
-  document.getElementById('btnDisconnectBeranda').onclick = disconnectWallet;
-  document.getElementById('btnCopyAlamatBeranda').onclick = copyAlamat;
-  document.getElementById('btnWithdraw').onclick = withdraw;
-  document.querySelectorAll('.nav-item[data-page]').forEach(item=>{ item.onclick = function(){gantiHalaman(this.dataset.page, this)} });
+document.addEventListener('DOMContentLoaded', function() {
+    update(); updateJam(); setInterval(updateJam,1000);
+
+    let w = ambilWallet();
+    if(w){
+        walletAddress = w;
+        tampilkanStatus(w);
+        if(window.BinanceChain) provider = window.BinanceChain;
+        if(provider){ web3 = new Web3(provider); contract = new web3.eth.Contract(ABI,CA); }
+    }
+
+    document.getElementById('tapButton').onclick = tap;
+    document.getElementById('btnConnect').onclick = connectWallet;
+    document.getElementById('btnDisconnect').onclick = disconnect;
+    document.getElementById('btnCopy').onclick = copyAlamat;
+    document.getElementById('btnWithdraw').onclick = withdrawBeneran;
+    document.getElementById('btnSalin').onclick = salinReferral;
+    document.getElementById('btnCake').onclick = ()=>bukaLP('https://swap.cakebaker.finance/add/BNB/'+CA);
+    document.getElementById('btnApe').onclick = ()=>bukaLP('https://apeswap.finance/add/BNB/'+CA);
+    document.getElementById('btnBiswa').onclick = ()=>bukaLP('https://app.biswap.org/add/BNB/'+CA);
+    document.querySelectorAll('.nav-item[data-page]').forEach(item=>{ item.onclick = function(){gantiHalaman(this.dataset.page, this)} });
 });
+
+function updateJam(){let el = document.getElementById('jam'); if(el) el.innerText=new Date().toLocaleTimeString('id-ID')}
+function tap(){auto=!auto; let btn = document.getElementById('tapButton'); if(auto){btn.classList.add('active'); btn.innerText = "STOP"; interval=setInterval(()=>{ saldoGame+=200; update(); },200);} else {btn.classList.remove('active'); btn.innerText = "TAP"; clearInterval(interval);}}
+function gantiHalaman(id, el){ document.querySelectorAll('.halaman').forEach(h => h.classList.remove('active')); document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active')); document.getElementById(id).classList.add('active'); el.classList.add('active'); if(id=='reward') updateReferral(); }
+function formatAngka(angka){ return Math.floor(angka).toString(); }
+
+// FIX: CLAIM GAK LIAT CONNECT, CUMA LIAT SALDO >= 100
+function update(){
+    document.getElementById('saldoGame').innerText = formatAngka(saldoGame);
+    document.getElementById('saldoClaim').innerText = formatAngka(saldoClaim);
+    document.getElementById('btnKlaim').disabled = saldoGame < 100;
+}
+
+// FIX: CLAIM CUMA PINDAH SALDO
+function klaimKeDana(){
+    if(saldoGame < 100) return alert("Minimal 100 GRD buat claim");
+    saldoClaim += saldoGame;
+    alert("✅ "+formatAngka(saldoGame)+" GRD masuk ke DANA");
+    saldoGame = 0;
+    update();
+}
+
+async function withdrawBeneran(){
+  if(!walletAddress) return alert("Connect wallet dulu!");
+  if(!contract) return alert("Contract belum ke-load. Connect ulang");
+  let jumlah = parseInt(document.getElementById('inputJumlah').value);
+  let alamat = document.getElementById('inputAlamat').value;
+  if(isNaN(jumlah) || jumlah < 100) return alert("Isi jumlah minimal 100 GRD");
+  if(!alamat) return alert("Hubungkan wallet dulu");
+  if(jumlah > saldoClaim) return alert("Saldo DANA tidak cukup");
+  document.getElementById('loading').innerText = "⏳ Mengirim "+jumlah+" GRD...";
+  try{
+    let d = 18;
+    let amount = BigInt(jumlah) * (10n ** BigInt(d));
+    let tx = await contract.methods.transfer(alamat, amount.toString()).send({from:walletAddress});
+    saldoClaim -= jumlah;
+    document.getElementById('loading').innerText = "";
+    document.getElementById('inputJumlah').value = "";
+    alert("✅ SUKSES WITHDRAW "+formatAngka(jumlah)+" GRD\nTX: "+tx.transactionHash);
+    update();
+  }catch(e){ document.getElementById('loading').innerText = ""; alert("❌ Gagal Kirim: "+e.message); }
+}
+
+async function copyAlamat(){ if(!walletAddress) return alert("Hubungkan wallet dulu"); await navigator.clipboard.writeText(walletAddress); alert("✅ Alamat wallet disalin!") }
+function updateReferral(){let link = window.location.origin + window.location.pathname + "?ref=" + walletAddress; document.getElementById('linkRef').value = link;}
+function salinReferral(){document.getElementById('linkRef').select(); navigator.clipboard.writeText(document.getElementById('linkRef').value); alert("✅ Link referral disalin!")}
+function showAkun(){ if(walletAddress){ alert("👤 Akun Saya\nWallet: " + walletAddress) } else { alert("👤 Akun Saya\nBelum connect wallet") }}
 </script>
 </body>
-</html>
+  </html>
