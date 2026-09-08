@@ -2,176 +2,66 @@
 <html lang="id">
 <head>
 <meta charset="UTF-8">
-<title>BANK SULTAN v60 FINAL</title>
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<script src="https://cdn.jsdelivr.net/npm/web3@1.10.0/dist/web3.min.js"></script>
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>BANK SULTAN v60.18</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/web3/1.10.0/web3.min.js"></script>
 <style>
-*{margin:0;padding:0;box-sizing:border-box;font-family:'Arial', sans-serif}
-body{background:#000;color:#fff;padding-bottom:80px}
+*{margin:0;padding:0;box-sizing:border-box;font-family:Arial, sans-serif;-webkit-tap-highlight-color:transparent;}
+body{background:#000;color:#fff;padding-bottom:100px}
 .header{text-align:center;padding:15px}
-.header h1{color:gold;text-shadow:0 0 15px gold;font-size:26px;font-weight:bold}
+.header h1{color:gold;text-shadow:0 0 15px gold;font-size:26px}
 .saldo-box{text-align:center;padding:15px}
-.saldo{font-size:36px;font-weight:bold;color:#fff}
-.saldo-kecil{font-size:14px;color:#aaa}
-.btn{border:none;border-radius:15px;padding:16px;width:90%;font-size:16px;font-weight:bold;margin:8px auto;display:block;cursor:pointer}
+.saldo{font-size:38px;font-weight:bold;color:#fff}
+.btn{border:none;border-radius:15px;padding:16px;width:90%;font-size:16px;font-weight:bold;margin:8px auto;display:block}
 .btn-biru{background:#1e90ff;color:white}
 .btn-klaim{background:linear-gradient(45deg, #FFD700, #FFA500);color:#000}
-.btn-tap{width:200px;height:200px;border-radius:50%;border:6px solid gold;box-shadow:0 0 40px rgba(255,215,0,0.8);margin:20px auto;background:radial-gradient(circle, #222 0%, #111 100%);display:flex;align-items:center;justify-content:center;font-size:28px;font-weight:bold;color:gold;cursor:pointer}
-.btn-tap.active{box-shadow:0 0 60px rgba(0,255,255,1);border-color:cyan;color:cyan}
-.navbar{position:fixed;bottom:0;left:0;right:0;background:#111;border-top:1px solid #333;display:flex;justify-content:space-around;padding:8px 0;z-index:999}
-.nav-item{color:#777;font-size:10px;text-align:center;cursor:pointer;flex:1;padding:4px}
+.btn-klaim:disabled{background:#333;color:#777}
+.btn-tap{width:220px;height:220px;border-radius:50%;border:8px solid gold;box-shadow:0 0 50px rgba(255,215,0,0.9);margin:25px auto;background:#222;display:flex;align-items:center;justify-content:center;font-size:20px;font-weight:bold;color:gold;text-align:center;user-select:none;}
+.btn-tap:active{transform:scale(0.90)}
+.navbar{position:sticky;bottom:0;left:0;right:0;background:#111;border-top:1px solid #333;display:flex;justify-content:space-around;padding:10px 0;z-index:999}
+.nav-item{color:#777;font-size:12px;text-align:center;cursor:pointer;flex:1}
 .nav-item.active{color:gold}
-.nav-icon{font-size:20px;display:block;margin-bottom:2px}
-.nav-plus{background:#2563eb;border-radius:50%;width:55px;height:55px;display:flex;align-items:center;justify-content:center;color:#fff;font-size:30px;margin:0 auto;border:4px solid #000}
-.grid-2{display:grid;grid-template-columns:repeat(2,1fr);gap:10px;margin:15px 0}
-.btn-menu{background:#1a1a1a;border:1px solid #333;border-radius:15px;padding:20px 10px;cursor:pointer;color:#fff;font-size:14px;text-align:center}
-.halaman{display:none}.halaman.active{display:block}
+.nav-icon{font-size:24px;display:block}
 .box{background:#1a1a1a;border:1px solid #333;border-radius:15px;padding:15px;margin:15px}
-.loading{color:yellow;font-size:12px;text-align:center}
+.halaman{display:none}.halaman.active{display:block}
 </style>
 </head>
 <body>
 
 <div id="beranda" class="halaman active">
-  <div class="header"><h1>BANK SULTAN</h1><div id="jam" style="color:#aaa;font-size:12px"></div></div>
-  <div class="saldo-box">
-    <div class="saldo"><span id="saldoGame">0</span> GRD</div>
-    <div class="saldo-kecil">Saldo Tap</div>
-  </div>
+  <div class="header"><h1>BANK SULTAN</h1></div>
+  <div class="saldo-box"><div class="saldo"><span id="saldoGame">0</span> GRD</div></div>
   <button class="btn btn-biru" onclick="connectWallet()">🔗 CONNECT WALLET</button>
   <div id="wallet" style="color:yellow;font-size:12px;text-align:center">Belum terhubung</div>
-  <div class="btn-tap" id="tapBtn">TAP</div>
-  <button class="btn btn-klaim" onclick="claim()">💰 KLAIM KE WALLET</button>
+  <div id="btnTap" class="btn-tap">TEKAN & TAHAN<br>+200 GRD/detik</div>
+  <button class="btn btn-klaim" id="btnKlaim" onclick="klaimKeDana()" disabled>⬇️ KLAIM KE DOMPET DANA</button>
 </div>
-
-<div id="berdagang" class="halaman"><div class="header"><h1>📈 BERDAGANG</h1></div><div class="grid-2"><div class="btn-menu" onclick="alert('Segera')">💵<br><b>Beli GRD</b></div><div class="btn-menu" onclick="alert('Segera')">🔄<br><b>Jual GRD</b></div></div></div>
 
 <div id="dana" class="halaman">
   <div class="header"><h1>💰 DANA</h1></div>
-  <div class="box"><div style="color:#aaa;font-size:12px">SALDO GRD DI WALLET</div><div style="font-size:20px;font-weight:bold"><span id="saldoClaim">0.00</span> GRD</div><div class="loading" id="loading">Loading...</div></div>
-  <div class="grid-2">
-    <div class="btn-menu" onclick="kirimGRD()">📤<br><b>Kirim</b></div>
-    <div class="btn-menu" onclick="terimaGRD()">📥<br><b>Terima</b></div>
-  </div>
-  <button class="btn btn-klaim" onclick="withdrawBeneran()">🏦 WITHDRAW</button>
+  <div class="box"><div style="color:#aaa">SALDO DANA</div><div style="font-size:22px;font-weight:bold"><span id="saldoDana">0.0000</span> GRD</div></div>
+  <div class="box"><button class="btn" style="background:#00c851;color:white" onclick="tarikKeWallet()">📤 TARIK KE WALLET</button></div>
 </div>
-
-<div id="reward" class="halaman"><div class="header"><h1>🎁 REWARD</h1></div><div class="box">Bagikan link, dapat +50 GRD<br><button class="btn btn-klaim" onclick="salinReferral()">SALIN LINK</button><div id="linkRef" style="color:cyan;font-size:11px;word-break:break-all;margin-top:8px"></div></div></div>
 
 <div class="navbar">
   <div class="nav-item active" onclick="gantiHalaman('beranda',this)"><span class="nav-icon">🏠</span>Beranda</div>
-  <div class="nav-item" onclick="gantiHalaman('berdagang',this)"><div class="nav-plus">+</div></div>
   <div class="nav-item" onclick="gantiHalaman('dana',this)"><span class="nav-icon">💰</span>Dana</div>
-  <div class="nav-item" onclick="gantiHalaman('reward',this)"><span class="nav-icon">🎁</span>Reward</div>
 </div>
 
-<audio id="djPlayer" loop></audio>
-
 <script>
-let saldoGame = 0; let saldoClaim = 0; let auto = false; let interval; let web3; let walletAddress = ""; let contract;
-
-// UDAH COLOK ALAMAT CONTRACT KAMU
+let saldoGame = 0; let saldoDana = 0; let web3; let walletAddress = ""; let contract; let tapInt;
 const CONTRACT_ADDRESS = "0x4847F2E8dD63ba03b9C4f935BdEd95bEc1bcaCb4";
+const CONTRACT_ABI = [{"inputs":[{"name":"to","type":"address"},{"name":"amount","type":"uint256"}],"name":"transfer","outputs":[{"name":"","type":"bool"}],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"name":"account","type":"address"}],"name":"balanceOf","outputs":[{"name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"decimals","outputs":[{"name":"","type":"uint8"}],"stateMutability":"view","type":"function"}];
 
-// ABI BEP20 STANDAR
-const CONTRACT_ABI = [
-  {"inputs":[{"name":"to","type":"address"},{"name":"amount","type":"uint256"}],"name":"transfer","outputs":[{"name":"","type":"bool"}],"stateMutability":"nonpayable","type":"function"},
-  {"inputs":[{"name":"account","type":"address"}],"name":"balanceOf","outputs":[{"name":"","type":"uint256"}],"stateMutability":"view","type":"function"},
-  {"inputs":[],"name":"decimals","outputs":[{"name":"","type":"uint8"}],"stateMutability":"view","type":"function"}
-];
+const btnTap = document.getElementById('btnTap');
+btnTap.ontouchstart = btnTap.onmousedown = (e)=>{e.preventDefault(); if(tapInt)clearInterval(tapInt); tapInt=setInterval(()=>{saldoGame+=200; document.getElementById('saldoGame').innerText=saldoGame.toLocaleString('id-ID'); document.getElementById('btnKlaim').disabled=false;},1000)}
+btnTap.ontouchend = btnTap.onmouseup = ()=>{clearInterval(tapInt)}
 
-const djLink = "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3";
-const djPlayer = document.getElementById('djPlayer'); djPlayer.volume = 0.6;
-
-window.addEventListener('load', function(){
-  update(); djPlayer.src = djLink; djPlayer.load();
-  setInterval(()=>{document.getElementById('jam').innerText=new Date().toLocaleTimeString()},1000);
-
-  document.getElementById('tapBtn').onclick = async function(){
-    auto=!auto;
-    if(auto){
-      this.classList.add('active'); this.innerText = "STOP";
-      interval=setInterval(()=>{ saldoGame+=200; update(); },200);
-      try{ djPlayer.muted = true; await djPlayer.play(); djPlayer.muted = false; }catch(e){}
-    } else {
-      this.classList.remove('active'); this.innerText = "TAP";
-      clearInterval(interval); djPlayer.pause(); djPlayer.currentTime = 0;
-    }
-  }
-})
-
-async function connectWallet(){
-  if(window.ethereum){
-    try{
-      web3 = new Web3(window.ethereum);
-      const accounts = await ethereum.request({ method: 'eth_requestAccounts' });
-      walletAddress = accounts[0];
-      contract = new web3.eth.Contract(CONTRACT_ABI, CONTRACT_ADDRESS);
-      document.getElementById('wallet').innerText = "Wallet: " + walletAddress.substring(0,6)+"...";
-      await ethereum.request({ method: 'wallet_switchEthereumChain', params: [{ chainId: '0x38' }] });
-      alert("✅ Terhubung BSC Mainnet")
-      loadBalance();
-    }catch(e){alert("Gagal: "+e.message)}
-  } else { alert("Install Metamask/Trustwallet/Binance Wallet") }
-}
-
-async function loadBalance(){
-  if(contract && walletAddress){
-    document.getElementById('loading').innerText = "Loading...";
-    let balance = await contract.methods.balanceOf(walletAddress).call();
-    let decimals = await contract.methods.decimals().call();
-    saldoClaim = balance / (10**decimals);
-    document.getElementById('loading').innerText = "";
-    update();
-  }
-}
-
-function update(){
-  document.getElementById('saldoGame').innerText = saldoGame.toLocaleString('id-ID');
-  document.getElementById('saldoClaim').innerText = parseFloat(saldoClaim).toFixed(4);
-}
-
-function claim(){
-  if(saldoGame > 0){
-    saldoClaim = parseFloat(saldoClaim) + saldoGame;
-    alert("✅ KLAIM "+saldoGame.toLocaleString('id-ID')+" GRD ke Saldo Wallet");
-    saldoGame = 0; update();
-  }
-}
-
-async function withdrawBeneran(){
-  if(walletAddress == ""){ alert("Connect wallet dulu!"); return; }
-  if(saldoClaim <= 0){ alert("Saldo 0"); return; }
-  let jumlah = prompt("Mau withdraw berapa GRD?");
-  if(jumlah){
-    try{
-      let decimals = await contract.methods.decimals().call();
-      let amountWei = jumlah * (10**decimals);
-      await contract.methods.transfer(walletAddress, amountWei.toString()).send({from: walletAddress});
-      alert("✅ SUKSES WITHDRAW " + jumlah + " GRD. Cek Metamask");
-      loadBalance();
-    }catch(e){ alert("Gagal: " + e.message) }
-  }
-}
-
-async function kirimGRD(){
-  if(walletAddress == ""){ alert("Connect wallet dulu!"); return; }
-  let alamat = prompt("Alamat wallet tujuan BSC:");
-  let jumlah = prompt("Jumlah GRD:");
-  if(alamat && jumlah){
-    try{
-      let decimals = await contract.methods.decimals().call();
-      let amountWei = jumlah * (10**decimals);
-      await contract.methods.transfer(alamat, amountWei.toString()).send({from: walletAddress});
-      alert("✅ SUKSES KIRIM " + jumlah + " GRD");
-      loadBalance();
-    }catch(e){ alert("Gagal: " + e.message) }
-  }
-}
-
-function terimaGRD(){ if(walletAddress == ""){ alert("Connect wallet dulu!"); return; } alert("Alamat Kamu:\n" + walletAddress + "\n\nCopy ini buat nerima GRD") }
-function salinReferral(){ let link = window.location.href.split('?')[0] + "?ref=" + walletAddress; navigator.clipboard.writeText(link); document.getElementById('linkRef').innerText = link; alert("✅ Link referral disalin!") }
-function gantiHalaman(id, el){ document.querySelectorAll('.halaman').forEach(h => h.classList.remove('active')); document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active')); document.getElementById(id).classList.add('active'); el.classList.add('active'); if(id=='dana'){loadBalance()} }
+async function connectWallet(){ if(window.ethereum){ web3=new Web3(ethereum); let acc=await ethereum.request({method:'eth_requestAccounts'}); walletAddress=acc[0]; contract=new web3.eth.Contract(CONTRACT_ABI,CONTRACT_ADDRESS); document.getElementById('wallet').innerText="Wallet: "+walletAddress.slice(0,6)+"..."+walletAddress.slice(-4); await ethereum.request({method:'wallet_switchEthereumChain',params:[{chainId:'0x38'}]}); loadBalance(); } else {alert("Buka di MetaMask Browser")} }
+async function loadBalance(){ if(contract){let b=await contract.methods.balanceOf(walletAddress).call(); let d=await contract.methods.decimals().call(); saldoDana=Number(b)/(10**d); document.getElementById('saldoDana').innerText=saldoDana.toFixed(4);} }
+async function klaimKeDana(){ if(!walletAddress){alert("Connect dulu");return} let d=await contract.methods.decimals().call(); let amount=BigInt(saldoGame*(10**d)); await contract.methods.transfer(walletAddress,amount.toString()).send({from:walletAddress}); alert("SUKSES KLAIM "+saldoGame+" GRD"); saldoGame=0; document.getElementById('saldoGame').innerText=0; document.getElementById('btnKlaim').disabled=true; loadBalance(); }
+async function tarikKeWallet(){ let j=prompt("Jumlah:"); if(j){let d=await contract.methods.decimals().call(); let amount=BigInt(j*(10**d)); await contract.methods.transfer(walletAddress,amount.toString()).send({from:walletAddress}); loadBalance();} }
+function gantiHalaman(id,el){ document.querySelectorAll('.halaman').forEach(h=>h.classList.remove('active')); document.querySelectorAll('.nav-item').forEach(n=>n.classList.remove('active')); document.getElementById(id).classList.add('active'); el.classList.add('active'); if(id=='dana')loadBalance(); }
 </script>
 </body>
-  </html>
+</html>
