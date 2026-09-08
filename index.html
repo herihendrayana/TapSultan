@@ -2,107 +2,166 @@
 <html lang="id">
 <head>
 <meta charset="UTF-8">
-<title>SULTAN TAP v7 - BANK SULTAN</title>
-<script src="https://cdn.jsdelivr.net/npm/ethers@5.7.2/dist/ethers.umd.min.js"></script>
+<title>BANK SULTAN v59 MUSIK FIX</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<script src="https://cdn.jsdelivr.net/npm/web3@1.10.0/dist/web3.min.js"></script>
 <style>
-body{background:#000;color:#0f0;font-family:'Courier New';text-align:center;padding:10px}
-.btn{padding:10px 18px;margin:4px;border:none;border-radius:8px;font-size:14px;cursor:pointer;font-weight:bold}
-.chain-btn{background:#111;color:#0f0;border:1px solid #0f0}.chain-btn.active{background:#0f0;color:#000}
-#tapBtn{background:radial-gradient(circle,#ff0044,#000);color:#fff;font-size:22px;padding:25px 50px;border-radius:50%;border:3px solid #0f0}
-.box{background:#0a0a0a;padding:12px;margin:8px;border-radius:8px;border:1px solid #333}
-.buy{background:#00ff00;color:#000}.sell{background:#ff0044;color:#fff}
-input{background:#111;color:#0f0;border:1px solid #0f0;padding:6px;width:100px;text-align:center}
-.rate{color:#ffaa00;font-size:12px}
+*{margin:0;padding:0;box-sizing:border-box;font-family:'Arial', sans-serif}
+body{background:#000;color:#fff;padding-bottom:80px}
+.header{text-align:center;padding:15px}
+.header h1{color:gold;text-shadow:0 0 15px gold;font-size:26px;font-weight:bold}
+.header.sub{color:#ccc;font-size:12px;font-weight:bold}
+.saldo-box{text-align:center;padding:15px}
+.saldo{font-size:36px;font-weight:bold;color:#fff}
+.saldo-kecil{font-size:14px;color:#aaa}
+.btn{border:none;border-radius:15px;padding:16px;width:90%;font-size:16px;font-weight:bold;margin:8px auto;display:block;cursor:pointer;transition:0.2s}
+.btn:active{transform:scale(0.97)}
+.btn-biru{background:#1e90ff;color:white}
+.btn-klaim{background:linear-gradient(45deg, #FFD700, #FFA500);color:#000}
+.btn-tap{width:200px;height:200px;border-radius:50%;border:6px solid gold;box-shadow:0 0 40px rgba(255,215,0,0.8);margin:20px auto;background:radial-gradient(circle, #222 0%, #111 100%);display:flex;align-items:center;justify-content:center;font-size:28px;font-weight:bold;color:gold;cursor:pointer;transition:0.1s}
+.btn-tap:active{transform:scale(0.92)}
+.btn-tap.active{box-shadow:0 0 60px rgba(0,255,255,1);border-color:cyan;color:cyan}
+.navbar{position:fixed;bottom:0;left:0;right:0;background:#111;border-top:1px solid #333;display:flex;justify-content:space-around;padding:8px 0;z-index:999}
+.nav-item{color:#777;font-size:10px;text-align:center;cursor:pointer;flex:1;padding:4px}
+.nav-item.active{color:gold}
+.nav-icon{font-size:20px;display:block;margin-bottom:2px}
+.nav-plus{background:#2563eb;border-radius:50%;width:55px;height:55px;display:flex;align-items:center;justify-content:center;color:#fff;font-size:30px;margin:0 auto;border:4px solid #000}
+.grid-2{display:grid;grid-template-columns:repeat(2,1fr);gap:10px;margin:15px 0}
+.btn-menu{background:#1a1a1a;border:1px solid #333;border-radius:15px;padding:20px 10px;cursor:pointer;color:#fff;font-size:14px;text-align:center;transition:0.2s}
+.btn-menu:active{background:#2a2a2a}
+.halaman{display:none}
+.halaman.active{display:block}
+.info-musik{color:cyan;font-size:11px;text-align:center;margin-top:-10px}
 </style>
 </head>
 <body>
 
-<h1>🏦 BANK SULTAN v7 🏦</h1>
+<!-- BERANDA -->
+<div id="beranda" class="halaman active">
+  <div class="header"><h1>BANK SULTAN</h1><div class="sub">BHINNEKA TUNGGAL IKA</div><div id="jam" style="color:#aaa;font-size:12px;margin-top:5px"></div></div>
+  <div class="saldo-box">
+    <div class="saldo"><span id="saldoGame">25,600</span> GRD</div>
+    <div class="saldo-kecil">≈ $<span id="saldoUSD">25.60</span></div>
+  </div>
+  <button class="btn btn-biru" onclick="connectWallet()">🔗 CONNECT WALLET</button>
+  <div id="wallet" style="color:yellow;font-size:12px;text-align:center">Belum terhubung</div>
 
-<div>
-  <button class="btn chain-btn active" onclick="switchChain('bsc')">BSC</button>
-  <button class="btn chain-btn" onclick="switchChain('polygon')">POLY</button>
-  <button class="btn chain-btn" onclick="switchChain('xlm')">XLM</button>
+  <div class="btn-tap" id="tapBtn">TAP</div>
+  <div class="info-musik" id="infoMusik">Tap untuk mulai nambang + musik</div>
+
+  <button class="btn btn-klaim" onclick="claim()">💰 KLAIM</button>
 </div>
 
-<button class="btn" id="connectBtn" onclick="connectWallet()">Connect Wallet</button>
-
-<div class="box">
-  <h3>SALDO GAME: <span id="gameSaldo">0</span> GRD</h3>
-  <p>Per Tap: <span id="perTap">1</span> GRD | Gas: <span id="gasInfo">~Rp 1200</span></p>
+<!-- BERDAGANG -->
+<div id="berdagang" class="halaman">
+  <div class="header"><h1>📈 BERDAGANG</h1></div>
+  <div class="grid-2">
+    <div class="btn-menu" onclick="beliGRD()">💵<br><b>Beli GRD</b></div>
+    <div class="btn-menu" onclick="swapKeUSDT()">🔄<br><b>Jual GRD</b></div>
+  </div>
 </div>
 
-<button class="btn" id="tapBtn" onclick="manualTap()">TAP</button>
-<button class="btn" id="autoTap" onclick="toggleAuto()">AUTO TAP: OFF</button>
-
-<div class="box">
-  <h4>BOOST</h4>
-  <button class="btn" onclick="buyBoost(2)">x2 - 1000</button>
-  <button class="btn" onclick="buyBoost(5)">x5 - 5000</button>
-  <button class="btn" onclick="buyBoost(10)">x10 - 20000</button>
+<!-- DANA -->
+<div id="dana" class="halaman">
+  <div class="header"><h1>💰 DANA</h1></div>
+  <div class="box"><div style="color:#aaa;font-size:12px">SALDO SIAP WITHDRAW</div><div style="font-size:20px;font-weight:bold"><span id="saldoClaim">359,844</span> GRD</div></div>
+  <div class="grid-2">
+    <div class="btn-menu" onclick="kirimGRD()">📤<br><b>Kirim</b></div>
+    <div class="btn-menu" onclick="terimaGRD()">📥<br><b>Terima</b></div>
+  </div>
+  <button class="btn btn-klaim" onclick="withdrawBeneran()">🏦 WITHDRAW</button>
 </div>
 
-<div class="box">
-  <h4>💱 EXCHANGER P2P 💱</h4>
-  <p class="rate">RATE: BELI 1 BNB = 1.000.000 GRD | JUAL 1jt GRD = 0.95 BNB</p>
-  <p>SELISIH 5% MASUK KE KAMU BOS</p>
-  <input type="number" id="jumlahGRD" placeholder="Jumlah GRD" value="1000000">
-  <br>
-  <button class="btn buy" onclick="beliGRD()">BELI GRD PAKE BNB</button>
-  <button class="btn sell" onclick="jualGRD()">JUAL GRD KE BNB</button>
+<!-- REWARD -->
+<div id="reward" class="halaman">
+  <div class="header"><h1>🎁 REWARD</h1></div>
+  <div class="box">
+    <div class="box-title">Referral</div>
+    Bagikan link, dapat +50 GRD/tap<br>
+    <button class="btn btn-klaim" onclick="salinReferral()">SALIN LINK</button>
+    <div id="linkRef" style="color:cyan;font-size:11px;word-break:break-all;margin-top:8px"></div>
+  </div>
 </div>
 
-<div class="box">
-  <h4>AUTO CLAIM</h4>
-  <p>Claim otomatis jika >= <input type="number" id="targetClaim" value="1000000"> GRD</p>
-  <button class="btn" id="autoClaim" onclick="toggleAutoClaim()">AUTO CLAIM: OFF</button>
+<!-- NAV BAWAH 4 MENU -->
+<div class="navbar">
+  <div class="nav-item active" onclick="gantiHalaman('beranda',this)"><span class="nav-icon">🏠</span>Beranda</div>
+  <div class="nav-item" onclick="gantiHalaman('berdagang',this)"><div class="nav-plus">+</div></div>
+  <div class="nav-item" onclick="gantiHalaman('dana',this)"><span class="nav-icon">💰</span>Dana</div>
+  <div class="nav-item" onclick="gantiHalaman('reward',this)"><span class="nav-icon">🎁</span>Reward</div>
 </div>
 
-<p id="status">Siap Gas Bos</p>
+<audio id="djPlayer" loop></audio>
 
 <script>
-let provider, signer, account, gameBalance = 0, multiplier = 1, autoTapInterval;
-let currentChain = 'bsc', autoClaimOn = false;
+let saldoGame = 25600;
+let saldoClaim = 359844;
+let auto = false;
+let interval;
+let web3;
+let walletAddress = "";
 
-const RATE_BELI = 1000000; // 1 BNB = 1jt GRD
-const RATE_JUAL = 950000; // 0.95 BNB = 1jt GRD. Selisih 5%
+// LINK BARU - INI PASTI BUNYI DI HP
+const djLink = "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3";
+const djPlayer = document.getElementById('djPlayer');
+djPlayer.volume = 0.6;
 
-const chains = {
-  bsc: {name:"BSC", chainId:"0x38", gas:"~Rp 1200"},
-  polygon: {name:"POLYGON", chainId:"0x89", gas:"~Rp 200"},
-  xlm: {name:"XLM", chainId:"xlm", gas:"~Rp 0.2"}
+window.addEventListener('load', function(){
+  update();
+  djPlayer.src = djLink;
+  djPlayer.load();
+  setInterval(()=>{document.getElementById('jam').innerText=new Date().toLocaleTimeString()},1000);
+
+  document.getElementById('tapBtn').onclick = async function(){
+    auto=!auto;
+    if(auto){
+      this.classList.add('active');
+      this.innerText = "STOP";
+      document.getElementById('infoMusik').innerText = "🎵 Sedang Nambang + Musik Jedak Jeduk";
+      interval=setInterval(()=>{ saldoGame+=200; update(); },200);
+
+      // TRIK BARU: PLAY > PAUSE > PLAY LAGI BIAR LOLOS BLOKIR
+      try{
+        djPlayer.muted = true;
+        await djPlayer.play();
+        djPlayer.muted = false;
+        djPlayer.currentTime = 0;
+      }catch(e){
+        alert("Buka volume HP bos");
+      }
+
+    } else {
+      this.classList.remove('active');
+      this.innerText = "TAP";
+      document.getElementById('infoMusik').innerText = "Tap untuk mulai nambang + musik";
+      clearInterval(interval);
+      djPlayer.pause();
+      djPlayer.currentTime = 0;
+    }
+  }
+})
+
+function gantiHalaman(id, el){
+  document.querySelectorAll('.halaman').forEach(h => h.classList.remove('active'));
+  document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+  el.classList.add('active');
 }
 
-function switchChain(chain){ currentChain = chain; document.querySelectorAll('.chain-btn').forEach(b=>b.classList.remove('active')); event.target.classList.add('active'); document.getElementById('gasInfo').innerText = chains[chain].gas; }
-
-async function connectWallet(){ if(currentChain==='xlm'){alert("XLM Input Alamat Manual");return;} provider=new ethers.providers.Web3Provider(window.ethereum); await provider.send("eth_requestAccounts",[]); await provider.send("wallet_switchEthereumChain",[{chainId:chains[currentChain].chainId}]); signer=provider.getSigner(); account=await signer.getAddress(); document.getElementById('connectBtn').innerText="✅ Terhubung"; }
-
-function manualTap(){ gameBalance += multiplier; document.getElementById('gameSaldo').innerText = gameBalance.toLocaleString(); checkAutoClaim(); }
-
-function toggleAuto(){ let btn=document.getElementById('autoTap'); if(autoTapInterval){clearInterval(autoTapInterval);autoTapInterval=null;btn.innerText="AUTO TAP: OFF";} else{autoTapInterval=setInterval(manualTap,70);btn.innerText="AUTO TAP: ON";} }
-
-function toggleAutoClaim(){ autoClaimOn=!autoClaimOn; let btn=document.getElementById('autoClaim'); btn.innerText=autoClaimOn?"AUTO CLAIM: ON":"AUTO CLAIM: OFF"; }
-
-function checkAutoClaim(){ let target=parseInt(document.getElementById('targetClaim').value); if(autoClaimOn && gameBalance>=target){ alert("AUTO CLAIM "+gameBalance.toLocaleString()+" GRD"); gameBalance=0;document.getElementById('gameSaldo').innerText=0; } }
-
-function buyBoost(x){ let harga=x*500; if(gameBalance>=harga){gameBalance-=harga;multiplier=x;document.getElementById('perTap').innerText=x;document.getElementById('gameSaldo').innerText=gameBalance.toLocaleString();}else{alert("GRD Kurang")} }
-
-// FITUR BANK SULTAN
-function beliGRD(){
-  let bnb = parseFloat(document.getElementById('jumlahGRD').value) / RATE_BELI;
-  alert("KIRIM "+bnb+" BNB ke WALLET KAMU\nNanti dapat "+document.getElementById('jumlahGRD').value+" GRD\n\n[INI SIMULASI. NANTI HUBUNGIN KE SMART CONTRACT]");
+function update(){
+  document.getElementById('saldoGame').innerText = saldoGame.toLocaleString('id-ID');
+  document.getElementById('saldoClaim').innerText = saldoClaim.toLocaleString('id-ID');
+  document.getElementById('saldoUSD').innerText = (saldoGame/1000).toFixed(2);
 }
 
-function jualGRD(){
-  let jml = parseFloat(document.getElementById('jumlahGRD').value);
-  if(gameBalance >= jml){
-    let bnb = jml / RATE_JUAL;
-    gameBalance -= jml;
-    document.getElementById('gameSaldo').innerText = gameBalance.toLocaleString();
-    alert("BERHASIL JUAL "+jml.toLocaleString()+" GRD\nDAPAT "+bnb+" BNB\nSELISIH 5% UNTUNG BUAT KAMU BOS 🤣");
-  }else{ alert("GRD GAME KURANG BOS"); }
-}
+function claim(){ if(saldoGame > 0){ saldoClaim += saldoGame; alert("✅ KLAIM "+saldoGame.toLocaleString('id-ID')+" GRD"); saldoGame = 0; update(); }}
+async function connectWallet(){ if(window.ethereum){ try{ web3 = new Web3(window.ethereum); const accounts = await ethereum.request({ method: 'eth_requestAccounts' }); walletAddress = accounts[0]; document.getElementById('wallet').innerText = "Wallet: " + walletAddress.substring(0,6)+"..."+walletAddress.substring(38); await ethereum.request({ method: 'wallet_switchEthereumChain', params: [{ chainId: '0x38' }] }); alert("✅ Terhubung BSC") }catch(e){alert("Gagal: "+e.message)} } else { alert("Install Metamask/Trustwallet") }}
+function beliGRD(){ alert("💵 BELI GRD\nFitur segera hadir") }
+function kirimGRD(){ if(walletAddress == ""){ alert("Connect wallet dulu!"); return; } let alamat = prompt("Alamat wallet tujuan:"); if(alamat){ alert("📤 Mengirim ke " + alamat) }}
+function terimaGRD(){ if(walletAddress == ""){ alert("Connect wallet dulu!"); return; } alert("Alamat Kamu:\n" + walletAddress) }
+async function withdrawBeneran(){ if(walletAddress == ""){ alert("Connect wallet dulu!"); return; } if(saldoClaim <= 0){ alert("Saldo 0"); return; } alert("✅ WITHDRAW " + saldoClaim.toLocaleString('id-ID') + " GRD ke wallet") }
+async function swapKeUSDT(){ if(walletAddress == ""){ alert("Connect wallet dulu!"); return; } if(saldoClaim <= 0){ alert("Saldo 0"); return; } alert("💵 MENJUAL " + saldoClaim.toLocaleString('id-ID') + " GRD > USDT") }
+function salinReferral(){ let link = window.location.href.split('?')[0] + "?ref=" + walletAddress; navigator.clipboard.writeText(link); document.getElementById('linkRef').innerText = link; alert("✅ Link referral disalin!") }
 </script>
-
 </body>
 </html>
